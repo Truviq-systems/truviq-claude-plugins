@@ -1,4 +1,4 @@
-# TruViq Guard for Claude Code
+# Truviq Guard for Claude Code
 
 A Claude Code plugin that watches every prompt, tool call and tool result of the coding agent, in real time, and stops:
 
