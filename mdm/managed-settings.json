@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "truviq": { "source": { "source": "github", "repo": "OWNER/truviq-claude-plugins" } }
+  },
+  "enabledPlugins": { "truviq-guard@truviq": true }
+}

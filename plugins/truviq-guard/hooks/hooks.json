@@ -1,0 +1,62 @@
+{
+  "description": "TruViq Guard: checks every prompt, tool call and tool result.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh\" \"${CLAUDE_PLUGIN_ROOT}/bin/guard_hook.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh\" \"${CLAUDE_PLUGIN_ROOT}/bin/guard_hook.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|MultiEdit|NotebookEdit|Read|Grep|WebFetch|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh\" \"${CLAUDE_PLUGIN_ROOT}/bin/guard_hook.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read|Grep|WebFetch|WebSearch|Task|Write|Edit|MultiEdit|NotebookEdit|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh\" \"${CLAUDE_PLUGIN_ROOT}/bin/guard_hook.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh\" \"${CLAUDE_PLUGIN_ROOT}/bin/guard_hook.py\"",
+            "timeout": 240
+          }
+        ]
+      }
+    ]
+  }
+}

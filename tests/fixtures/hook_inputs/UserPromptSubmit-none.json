@@ -1,0 +1,10 @@
+{
+  "session_id": "fd17b642-f81b-487e-accc-88d649c84f53",
+  "transcript_path": "{HOME}/.claude/projects/-demo-repo/fd17b642-f81b-487e-accc-88d649c84f53.jsonl",
+  "cwd": "{REPO}",
+  "scratchpad_dir": "/tmp/claude-scratchpad",
+  "prompt_id": "a7d5cda5-f9fd-4367-b99f-a75676064f8a",
+  "permission_mode": "default",
+  "hook_event_name": "UserPromptSubmit",
+  "prompt": "Read docs/CLEAN.md, then run 'ls -la' with Bash. Reply with one sentence."
+}

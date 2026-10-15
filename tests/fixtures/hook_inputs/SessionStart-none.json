@@ -1,0 +1,8 @@
+{
+  "session_id": "fd17b642-f81b-487e-accc-88d649c84f53",
+  "transcript_path": "{HOME}/.claude/projects/-demo-repo/fd17b642-f81b-487e-accc-88d649c84f53.jsonl",
+  "cwd": "{REPO}",
+  "scratchpad_dir": "/tmp/claude-scratchpad",
+  "hook_event_name": "SessionStart",
+  "source": "startup"
+}

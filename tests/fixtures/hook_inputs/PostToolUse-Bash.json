@@ -1,0 +1,26 @@
+{
+  "session_id": "fd17b642-f81b-487e-accc-88d649c84f53",
+  "transcript_path": "{HOME}/.claude/projects/-demo-repo/fd17b642-f81b-487e-accc-88d649c84f53.jsonl",
+  "cwd": "{REPO}",
+  "scratchpad_dir": "/tmp/claude-scratchpad",
+  "prompt_id": "a7d5cda5-f9fd-4367-b99f-a75676064f8a",
+  "permission_mode": "default",
+  "effort": {
+    "level": "medium"
+  },
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "ls -la",
+    "description": "List files in current directory"
+  },
+  "tool_response": {
+    "stdout": "total 36\ndrwxr-xr-x 5 dev dev 4096 Oct  9 07:46 .\ndrwx------ 6 dev dev 4096 Oct  9 07:46 ..\n-rw-r--r-- 1 dev dev   74 Oct  9 07:46 .env\ndrwxr-xr-x 7 dev dev 4096 Oct  9 07:46 .git\n-rw-r--r-- 1 dev dev    5 Oct  9 07:46 .gitignore\n-rw-r--r-- 1 dev dev   59 Oct  9 07:46 CLAUDE.md\n-rw-r--r-- 1 dev dev  188 Oct  9 07:46 README.md\ndrwxr-xr-x 2 dev dev 4096 Oct  9 07:46 docs\ndrwxr-xr-x 2 dev dev 4096 Oct  9 07:46 src",
+    "stderr": "",
+    "interrupted": false,
+    "isImage": false,
+    "noOutputExpected": false
+  },
+  "tool_use_id": "toolu_012hk7uU23QPen1P3jW239mp",
+  "duration_ms": 84
+}

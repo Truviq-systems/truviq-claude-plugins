@@ -1,0 +1,69 @@
+# Normal developer commands. None of these may produce a finding of MEDIUM or above.
+ls -la
+git status
+git diff --stat
+git log --oneline -20
+git add -A
+git commit -m "fix: handle empty refund list"
+git push origin feature/login
+git push -u origin feat/refunds
+git pull --rebase
+git checkout -b feat/pagination
+git stash
+git reset --soft HEAD~1
+git rebase main
+npm install
+npm run build
+npm test
+pnpm i
+yarn add react
+pip install -r requirements.txt
+python -m pytest -q
+pytest tests/ -x
+python manage.py migrate
+uvicorn main:app --reload --port 8000
+docker build -t payments-api .
+docker compose up -d
+docker ps
+kubectl get pods -n staging
+kubectl logs deploy/api -n staging
+terraform init
+terraform plan
+cat README.md
+head -50 src/main.py
+grep -rn "TODO" src
+find . -name "*.py" | wc -l
+rm -rf node_modules
+rm -rf build dist
+rm -rf /tmp/test-output
+rm -rf ./build/*
+rm -r src/old_module
+rm -f app.log
+mkdir -p src/utils
+cp .env.example .env
+source .env && python app.py
+curl https://api.github.com/repos/anthropics/claude-code
+curl -s http://localhost:8000/health
+curl -X POST http://localhost:8000/api/items -d '{"name":"x"}'
+curl -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/user
+wget https://pypi.org/simple/requests/
+echo $PATH
+chmod +x scripts/run.sh
+chmod 755 deploy.sh
+tar -czf backup.tgz src
+make test
+go test ./...
+cargo build --release
+mvn -q package
+sed -i 's/foo/bar/g' src/app.py
+python3 -c "print(1 + 1)"
+node -e "console.log(process.version)"
+env | grep NODE
+ps aux | grep python
+kill 12345
+lsof -i :8000
+du -sh *
+df -h
+which python3
+docker run -e API_KEY=$API_KEY payments-api
+ssh-keygen -t ed25519 -f /tmp/test_key -N ""

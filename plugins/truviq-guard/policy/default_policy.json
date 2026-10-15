@@ -1,0 +1,167 @@
+{
+  "mode": "enforce",
+  "severity_actions": {
+    "CRITICAL": "deny",
+    "HIGH": "ask",
+    "MEDIUM": "warn",
+    "LOW": "log",
+    "INFO": "log"
+  },
+  "detectors": {
+    "G-CODE-001": {
+      "action": "deny"
+    },
+    "G-SEC-002": {
+      "action": "deny"
+    },
+    "G-WEB-001": {
+      "action": "deny"
+    },
+    "G-DEP-003": {
+      "action": "ask"
+    },
+    "G-QUAL-002": {
+      "action": "deny"
+    }
+  },
+  "fail_closed_tools": [
+    "Bash",
+    "Write",
+    "Edit",
+    "MultiEdit",
+    "NotebookEdit"
+  ],
+  "egress_allow_hosts": [
+    "github.com",
+    "api.github.com",
+    "codeload.github.com",
+    "pypi.org",
+    "files.pythonhosted.org",
+    "registry.npmjs.org",
+    "registry.yarnpkg.com",
+    "localhost",
+    "127.0.0.1"
+  ],
+  "secret_paths": [
+    ".env",
+    ".env.*",
+    "!.env.example",
+    "!.env.sample",
+    "!.env.template",
+    "*.pem",
+    "*.key",
+    "*.p12",
+    "*.pfx",
+    "id_rsa*",
+    "id_ed25519*",
+    "id_ecdsa*",
+    "~/.ssh/**",
+    "~/.aws/**",
+    "~/.config/gcloud/**",
+    "~/.kube/config",
+    "~/.docker/config.json",
+    "~/.netrc",
+    "~/.git-credentials",
+    "~/.npmrc",
+    "~/.pypirc",
+    "~/.claude/.credentials.json",
+    "~/.truviq/guard.env",
+    "/proc/*/environ",
+    "/proc/*/cmdline",
+    "credentials.json",
+    "service-account*.json",
+    "*.tfvars",
+    "secrets.*"
+  ],
+  "protected_paths": [
+    ".claude/settings.json",
+    ".claude/settings.local.json",
+    "~/.claude/settings.json",
+    "~/.claude/settings.local.json",
+    "~/.claude/plugins/**",
+    "/etc/claude-code/**",
+    "~/.truviq/**",
+    ".truviq/**",
+    ".git/hooks/**",
+    ".git/config",
+    "~/.local/bin/truviq"
+  ],
+  "instruction_files": [
+    "CLAUDE.md",
+    "CLAUDE.local.md",
+    ".claude/CLAUDE.md",
+    "AGENTS.md",
+    "GEMINI.md",
+    ".cursorrules",
+    ".windsurfrules",
+    ".github/copilot-instructions.md"
+  ],
+  "production_markers": [
+    "--context prod",
+    "--context=prod",
+    "-n prod",
+    "--namespace prod",
+    "--namespace=prod",
+    "prod.tfvars",
+    "production.tfvars",
+    "workspace select prod",
+    "--env production",
+    "--env=production"
+  ],
+  "trusted_paths": [],
+  "webfetch": "redirect",
+  "max_scan_bytes": 2000000,
+  "llm": {
+    "enabled": true,
+    "providers": [
+      "groq",
+      "gemini"
+    ],
+    "timeout_seconds": 3,
+    "max_chars": 4000,
+    "groq_model": "openai/gpt-oss-20b",
+    "gemini_model": "gemini-2.5-flash"
+  },
+  "alerts": {
+    "email_min_severity": "CRITICAL",
+    "email_detectors": [
+      "G-INJ-001",
+      "G-INJ-002",
+      "G-INJ-003",
+      "G-INJ-005",
+      "G-OBF-001"
+    ],
+    "email_detectors_min_severity": "MEDIUM",
+    "dedupe_minutes": 10
+  },
+  "show_messages_in_monitor_mode": true,
+  "dependencies": {
+    "review_changes": true,
+    "registry_check": true,
+    "timeout_seconds": 2,
+    "new_package_days": 30,
+    "vulnerability_check": true
+  },
+  "dashboard": {
+    "ship_min_severity": "LOW",
+    "port": 8787
+  },
+  "quality": {
+    "enabled": true,
+    "syntax": true,
+    "unused_imports": true,
+    "undefined_names": true,
+    "missing_modules": true,
+    "linters": true,
+    "run_tests": true,
+    "type_check": true,
+    "unused_dependencies": true,
+    "logic_review": true,
+    "test_command": "",
+    "test_timeout_seconds": 90,
+    "linter_timeout_seconds": 4,
+    "max_fix_rounds": 2,
+    "logic_review_timeout_seconds": 25,
+    "logic_review_max_chars": 12000
+  }
+}

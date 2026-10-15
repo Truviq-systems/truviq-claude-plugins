@@ -1,0 +1,14 @@
+{
+  "name": "truviq",
+  "owner": { "name": "TruViq" },
+  "description": "TruViq security plugins for Claude Code",
+  "plugins": [
+    {
+      "name": "truviq-guard",
+      "source": "./plugins/truviq-guard",
+      "description": "Real-time guard: blocks dangerous commands, secret theft and prompt injection; reviews generated code and dependencies; central dashboard, email alerts, fleet health and a nightly red team.",
+      "version": "0.6.2",
+      "category": "security"
+    }
+  ]
+}
