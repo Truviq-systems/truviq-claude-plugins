@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import glob
 import json
+import ntpath
 import os
 import re
 import shutil
@@ -242,8 +243,8 @@ def _mode_of(path: str) -> int | None:
         return None
 
 
-def windows_checks(which=shutil.which, environ=None, exists=os.path.exists, run=subprocess.run) -> list[dict]:
-    """Native Windows only: hooks need Git Bash (they run through `sh`), and the guard_fetch MCP server needs `python3`."""
+def windows_checks(which=shutil.which, environ=None, exists=os.path.exists) -> list[dict]:
+    """Native Windows only: hooks need Git Bash, and the guard_fetch MCP server needs `sh` on PATH (Claude Code starts it directly)."""
     env = os.environ if environ is None else environ
     checks = []
     bash = [env.get("CLAUDE_CODE_GIT_BASH_PATH", ""), r"C:\Program Files\Git\bin\bash.exe", r"C:\Program Files (x86)\Git\bin\bash.exe"]
@@ -253,16 +254,11 @@ def windows_checks(which=shutil.which, environ=None, exists=os.path.exists, run=
     found = next((b for b in bash if b and exists(b)), "")
     checks.append(_check("Git Bash (runs the hooks)", "ok" if found else "fail", found or "not found",
                          "" if found else "Install Git for Windows (git-scm.com), then restart Claude Code. Without it the guard's hooks cannot run."))
-    py3 = which("python3") or ""
-    works = bool(py3)
-    if py3 and "WindowsApps" in py3:  # may be the Microsoft Store placeholder that only opens the Store
-        try:
-            works = run([py3, "-c", ""], capture_output=True, timeout=10).returncode == 0
-        except (OSError, subprocess.TimeoutExpired):
-            works = False
-    checks.append(_check("python3 for safe web fetch", "ok" if works else "warn", py3 if works else "no working `python3` command",
-                         "" if works else 'The guard_fetch tool cannot start, so web fetches are refused. Install Python from the Microsoft Store '
-                                          '(it provides python3), or set "webfetch": "scan" in ~/.truviq/policy.json'))
+    sh = which("sh") or ""  # the MCP server runs `sh bin/run-python.sh`; Git for Windows keeps sh.exe in Git\bin, off PATH by default
+    git_bin = ntpath.dirname(found) if found else r"C:\Program Files\Git\bin"
+    checks.append(_check("sh for safe web fetch", "ok" if sh else "warn", sh or "`sh` is not on PATH",
+                         "" if sh else f"The guard_fetch tool cannot start, so web fetches are refused. Add {git_bin} to your user PATH, "
+                                       'then restart Claude Code, or set "webfetch": "scan" in ~/.truviq/policy.json'))
     return checks
 
 

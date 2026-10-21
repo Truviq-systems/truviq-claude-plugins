@@ -1,6 +1,6 @@
 {
   "name": "truviq-guard",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Real-time guard for Claude Code: blocks dangerous commands, secret theft and prompt injection; reviews generated code and dependencies with DENY/ASK/APPROVE cards; central dashboard and email alerts.",
   "author": { "name": "TruViq" },
   "keywords": ["security", "prompt-injection", "red-teaming", "compliance", "owasp"]

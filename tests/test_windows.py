@@ -65,6 +65,20 @@ class LauncherTest(GuardTest):
         self.assertEqual(p.returncode, 0, p.stderr)
         self.assertIn("deny", p.stdout)
 
+    def test_mcp_server_uses_the_launcher(self):
+        with open(os.path.join(PLUGIN, ".mcp.json")) as f:
+            srv = json.load(f)["mcpServers"]["truviq"]
+        self.assertEqual(srv["command"], "sh")
+        self.assertEqual(srv["args"], ["${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh", "${CLAUDE_PLUGIN_ROOT}/bin/mcp_server.py"])
+
+    def test_mcp_server_starts_past_the_store_placeholder(self):
+        init = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                           "params": {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}}})
+        p = subprocess.run([SH, LAUNCHER, os.path.join(PLUGIN, "bin", "mcp_server.py")], input=init + "\n", capture_output=True, text=True,
+                           env={**os.environ, "PATH": f"{self.stub_dir}{os.pathsep}{self.real_dir}"}, timeout=30)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(json.loads(p.stdout)["result"]["serverInfo"]["name"], "truviq-guard")
+
     def test_every_hook_uses_the_launcher_with_quoted_paths(self):
         with open(os.path.join(PLUGIN, "hooks", "hooks.json")) as f:
             hooks = json.load(f)["hooks"]
@@ -92,19 +106,23 @@ class WindowsTamperTest(GuardTest):
 
 class WindowsDoctorTest(unittest.TestCase):
     def test_git_bash_found_and_python3_ok(self):
-        checks = install.windows_checks(which=lambda n: {"git": r"C:\Program Files\Git\cmd\git.exe", "python3": r"C:\Python312\python3.exe"}.get(n),
+        checks = install.windows_checks(which=lambda n: {"git": r"C:\Program Files\Git\cmd\git.exe", "sh": r"C:\Program Files\Git\bin\sh.exe"}.get(n),
                                         environ={}, exists=lambda p: p.endswith(os.path.join("Git", "bin", "bash.exe")) or "Git\\bin\\bash.exe" in p)
         self.assertEqual([c["status"] for c in checks], ["ok", "ok"])
 
-    def test_missing_git_bash_and_store_placeholder(self):
-        class Done:
-            returncode = 9009
-        checks = install.windows_checks(which=lambda n: r"C:\Users\x\AppData\Local\Microsoft\WindowsApps\python3.exe" if n == "python3" else None,
-                                        environ={}, exists=lambda p: False, run=lambda *a, **k: Done())
+    def test_missing_git_bash_and_sh(self):
+        checks = install.windows_checks(which=lambda n: None, environ={}, exists=lambda p: False)
         self.assertEqual(checks[0]["status"], "fail")
         self.assertIn("Git for Windows", checks[0]["fix"])
         self.assertEqual(checks[1]["status"], "warn")
+        self.assertIn(r"Git\bin", checks[1]["fix"])
         self.assertIn('"webfetch": "scan"', checks[1]["fix"])
+
+    def test_sh_missing_but_git_bash_installed_points_at_its_folder(self):
+        checks = install.windows_checks(which=lambda n: None, environ={"CLAUDE_CODE_GIT_BASH_PATH": r"D:\Tools\Git\bin\bash.exe"},
+                                        exists=lambda p: p == r"D:\Tools\Git\bin\bash.exe")
+        self.assertEqual([c["status"] for c in checks], ["ok", "warn"])
+        self.assertIn(r"D:\Tools\Git\bin", checks[1]["fix"])
 
 
 class LauncherScriptsTest(GuardTest):

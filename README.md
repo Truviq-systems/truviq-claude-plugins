@@ -593,7 +593,7 @@ The marketplace is published from a clean export, never from this working folder
 
 ```bash
 python3 release/export_marketplace.py ~/truviq-claude-plugins   # no .env, secrets, build caches or the internal report; refuses if it finds a key
-cd ~/truviq-claude-plugins && git init -b main && git add -A && git commit -m "TruViq Guard 0.6.2"
+cd ~/truviq-claude-plugins && git init -b main && git add -A && git commit -m "TruViq Guard 0.6.3"
 git remote add origin git@github-truviq:Truviq-systems/truviq-claude-plugins.git && git push -u origin main
 ```
 
@@ -615,7 +615,7 @@ If `/plugin marketplace add` fails over SSH, Claude Code falls back to HTTPS; a 
 **Windows (native, not WSL):**
 - Install **Git for Windows** (git-scm.com). Claude Code runs the guard's hooks through Git Bash; without it they cannot run.
 - Install **Python 3.8+** from python.org (tick "Add python.exe to PATH") or the Microsoft Store. The hooks find `python3`, `python` or `py -3` on their own and skip the Store placeholder, and a user name with a space (e.g. `C:\Users\Jane Doe`) is fine.
-- The safe web-fetch tool (`guard_fetch`) is started by Claude Code directly and needs a working `python3` command. The Microsoft Store Python provides it. Without it, `doctor` warns and web fetches are refused; set `"webfetch": "scan"` in `~/.truviq/policy.json` to allow WebFetch with output scanning instead.
+- The safe web-fetch tool (`guard_fetch`) is started by Claude Code directly as `sh bin/run-python.sh`, so it finds Python the same way the hooks do, but `sh` must be on PATH. Git for Windows keeps `sh.exe` in `C:\Program Files\Git\bin`, which the default install does not add to PATH: add that folder to your user PATH and restart Claude Code. Without it, `doctor` warns and web fetches are refused; set `"webfetch": "scan"` in `~/.truviq/policy.json` to allow WebFetch with output scanning instead.
 
 For a whole company, deploy Claude Code **managed settings** with `"enabledPlugins": {"truviq-guard@truviq": true}` and `extraKnownMarketplaces` pointing at the repo (see `mdm/`).
 
@@ -674,7 +674,7 @@ An adversarial review of the new code confirmed 8 issues (3 HIGH). All are fixed
 - **Dependency lookups need internet.** PyPI/npm/OSV checks time out after 2 s and are cached for 24 h; when they can't run, the card says "could not verify" (LOW), never "safe".
 - **The installed plugin runs straight from this folder** (local marketplace). Every saved edit to the source is live in your guard immediately, so test changes with `python3 -m unittest` before saving related edits one at a time.
 - **`guard_fetch` resolves the host to check it is public, then fetches.** A DNS-rebinding attacker could in theory switch the address between the two lookups.
-- **Windows native:** needs Git for Windows (hooks run through Git Bash) and Python 3.8+ (`python3`, `python` or `py`); the safe web-fetch tool needs `python3` itself. Session state has no file locking there. The Windows paths are covered by simulated tests; Linux, WSL and macOS are the tested targets on real machines.
+- **Windows native:** needs Git for Windows (hooks run through Git Bash) and Python 3.8+ (`python3`, `python` or `py`); the safe web-fetch tool also needs `sh` (Git\bin) on PATH. Session state has no file locking there. The Windows paths are covered by simulated tests; Linux, WSL and macOS are the tested targets on real machines.
 - **This guard does not replace** CI scanning, code review, or least-privilege credentials.
 
 ---
@@ -688,6 +688,7 @@ An adversarial review of the new code confirmed 8 issues (3 HIGH). All are fixed
 | 0.1.0 | 2026-10-09 | R0 + R1 | Hooks, command/secret/tamper detectors, rules file, monitor mode, fail-safe, pre-commit secret scan |
 | 0.2.0 | 2026-10-09 | R2 + security review | Pre-read file scanning, tool-output scanning, session taint, Groq/Gemini classifier, `guard_fetch`, start-up instruction-file check, jailbreak check, explain skill; 10 review findings fixed |
 | 0.2.1 | 2026-10-09 | R2 fix | Pasted secrets in prompts blocked (G-SEC-002); wider "ignore previous …" and "leak the secrets" rules; unclear prompts sent to the classifier |
+| 0.6.3 | 2026-10-21 | Windows MCP fix | The `truviq` MCP server (`guard_fetch`, `guard_scan`) starts through `bin/run-python.sh` like the hooks, instead of a bare `python3`, which on Windows is missing or the Microsoft Store placeholder and showed as "failed – Connection closed". On Windows `doctor` now checks that `sh` is on PATH (Git\bin) instead of `python3` |
 | 0.6.2 | 2026-10-15 | Windows + publishing | Hooks run through `bin/run-python.sh`, which finds `python3`, `python` or `py -3` and skips the Microsoft Store placeholder (Windows has no `python3` by default); the `truviq` command and git pre-commit hook use it too. The agent is now also blocked from running guard admin commands through `py`. `doctor` checks Git Bash and `python3` on Windows. Export leaves out build caches and the internal report; `--help` works. New `truviq setup --keys` asks for each API key in the terminal (hidden) and saves it to `~/.truviq/guard.env`; README lists which key turns on which feature |
 | 0.6.1 | 2026-10-15 | R9 update | The AI logic review is **on by default** (it was opt-in). `doctor` now shows whether it can run ("Code logic review: on (groq, gemini)", or what is missing). Turn it off with `"quality": {"logic_review": false}` |
 | 0.6.0 | 2026-10-15 | **R9** Code quality | Before each write: syntax check (Python, JSON, TOML, YAML) that blocks unparsable files, unused imports (Python, JS/TS), undefined names (Python), the project's ruff / eslint on the added lines. At the end of the turn (new `Stop` hook): imports that resolve nowhere (hallucinated packages), the project's tests and TypeScript type check with Claude sent back to fix failures (max 2 rounds), unused new dependencies, optional LLM logic review (off by default). Detectors G-QUAL-001…007 |
