@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "truviq": {
-      "command": "sh",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh", "${CLAUDE_PLUGIN_ROOT}/bin/mcp_server.py"]
+      "command": "git",
+      "args": ["-c", "alias.truviq-mcp=!sh", "truviq-mcp", "${CLAUDE_PLUGIN_ROOT}/bin/run-python.sh", "${CLAUDE_PLUGIN_ROOT}/bin/mcp_server.py"]
     }
   }
 }

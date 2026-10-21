@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import glob
 import json
-import ntpath
 import os
 import re
 import shutil
@@ -243,8 +242,18 @@ def _mode_of(path: str) -> int | None:
         return None
 
 
+def mcp_launcher_check(which=shutil.which) -> dict:
+    """The MCP server is started as `git -c alias.truviq-mcp=!sh truviq-mcp run-python.sh mcp_server.py`: one command that works on
+    every OS with no setup, because .mcp.json allows only one command and Windows has neither `python3` nor `sh` on PATH, while git
+    is there and runs `!` aliases with its own bundled sh."""
+    git = which("git") or ""
+    return _check("git for safe web fetch", "ok" if git else "warn", git or "`git` is not on PATH",
+                  "" if git else 'The guard_fetch tool cannot start, so web fetches are refused. Install Git (git-scm.com) and restart '
+                                 'Claude Code, or set "webfetch": "scan" in ~/.truviq/policy.json')
+
+
 def windows_checks(which=shutil.which, environ=None, exists=os.path.exists) -> list[dict]:
-    """Native Windows only: hooks need Git Bash, and the guard_fetch MCP server needs `sh` on PATH (Claude Code starts it directly)."""
+    """Native Windows only: hooks need Git Bash."""
     env = os.environ if environ is None else environ
     checks = []
     bash = [env.get("CLAUDE_CODE_GIT_BASH_PATH", ""), r"C:\Program Files\Git\bin\bash.exe", r"C:\Program Files (x86)\Git\bin\bash.exe"]
@@ -254,11 +263,6 @@ def windows_checks(which=shutil.which, environ=None, exists=os.path.exists) -> l
     found = next((b for b in bash if b and exists(b)), "")
     checks.append(_check("Git Bash (runs the hooks)", "ok" if found else "fail", found or "not found",
                          "" if found else "Install Git for Windows (git-scm.com), then restart Claude Code. Without it the guard's hooks cannot run."))
-    sh = which("sh") or ""  # the MCP server runs `sh bin/run-python.sh`; Git for Windows keeps sh.exe in Git\bin, off PATH by default
-    git_bin = ntpath.dirname(found) if found else r"C:\Program Files\Git\bin"
-    checks.append(_check("sh for safe web fetch", "ok" if sh else "warn", sh or "`sh` is not on PATH",
-                         "" if sh else f"The guard_fetch tool cannot start, so web fetches are refused. Add {git_bin} to your user PATH, "
-                                       'then restart Claude Code, or set "webfetch": "scan" in ~/.truviq/policy.json'))
     return checks
 
 
@@ -300,6 +304,7 @@ def doctor(claude: str | None = None, online: bool = False, live: bool = False, 
     sec = config.load_secrets()
     checks.append(_check("Mode", "ok" if pol["mode"] == "enforce" else "warn", pol["mode"],
                          "" if pol["mode"] == "enforce" else 'Set "mode": "enforce" in ~/.truviq/policy.json'))
+    checks.append(mcp_launcher_check())
     if os.name == "nt":
         checks += windows_checks()
     lr = quality.logic_review_status(pol, sec)
